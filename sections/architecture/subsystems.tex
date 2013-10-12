@@ -1,0 +1,166 @@
+
+
+
+\section{Subsystem design}
+
+This section describes the details of each subsystem. Classes, class
+hierarchies, data structures, algorithms, threading model, error handling and
+possible additional aspects.
+
+
+\textbf{Common requirements for all subsystems:}
+
+\begin{description}
+	\item	[\newReqCommon{standalonedir}]	In the source code all subsystems
+			must have a stand alone directory independent from the other ones.
+	
+	\item	[\newReqCommon{reachingfunctionality}] But each subsystem must be
+			able to reach the functionality of the other subsystems which they
+			provide.
+
+	\item	[\newReqCommon{linktoone}] Each subsystem compile its own binary
+			files and these binary files can be linked into one executable file.
+	
+\end{description}
+
+%get req common: \getReqCommon{standalonedir}
+
+%-------------------------------------------------------------------------------
+%	Vertex provider
+%-------------------------------------------------------------------------------
+
+\subsection{Vertex provider subsystem}
+
+
+This subsystem stores the vertex related data which comes as input into the
+algorithm.
+
+The class diagram for vertex provider can be seen on
+the Figure \ref{fig:vertexprovider}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\textwidth]{VertexProvider.pdf}
+	\caption{Class diagram for vertex provider}
+	\label{fig:vertexprovider}
+\end{figure}
+
+
+\textbf{Requirements}:
+
+\begin{itemize}
+	\item	Receiving the input:
+		\begin{itemize}
+			\item	Copying the input. This is not efficient.
+			\item	Compute where is each coordinate if given the address of the
+						first element, the size of one coordinate, the padding
+						value between the coordinates, the padding between
+						the vertices and the number of vertices.
+						In this case the randomization how should be solved?
+						Randomization won't be dependent on this data
+						representation. The randomizer subsystem only requires
+						the number of vertices from this subsystem. And the
+						vertices the initial tetrahedron build up from.
+		\end{itemize}
+	\item	The functionality of this subsystem must be reachable from the other
+		subsystems as well.
+\end{itemize}
+
+
+%-------------------------------------------------------------------------------
+%	Tetrahedron vertices chooser
+%-------------------------------------------------------------------------------
+
+\subsection{Tetrahedron vertices chooser subsystem}
+
+The class diagram for choosing the vertices to the tetrahedron can be seen on
+the Figure \ref{fig:tetrahedronvertices}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{TetrahedronVertices.pdf}
+	\caption{Class diagram for choosing vertices to the tetrahedron}
+	\label{fig:tetrahedronvertices}
+\end{figure}
+
+
+Possible code for \texttt{VertexChooser::ChooseVertices()}  can be seen in
+the Listing \ref{lst:vertexchooser}.
+
+\lstset{language=[GNU]C++,
+		morekeywords={[2]size_t,T,vector,res_t,CH_SUCCESS,vid_t,
+						VertexChooser,VertexChooserRule},
+		keywordstyle={[2]\color{cyan}\bfseries}}
+\begin{lstlisting}[caption={Possible code for the
+							\texttt{VertexChooser::ChooseVertices()} function},
+					label={lst:vertexchooser}]
+ch::res_t VertexChooser::ChooseVertices(
+									const std::vector<VertexChooserRule> &rule,
+									std::vector<vid_t> &point )
+{
+	for ( std::size_t i=0; i < rule.size(); ++i )
+	{
+		ch::res_t res = rule[i].ChooseVertex( dh, point );
+		if ( res != CH_SUCCESS )
+			return res;
+	}
+	return CH_SUCCESS;
+}
+\end{lstlisting}
+
+
+Possible code for calling the \texttt{VertexChooser::ChooseVertices()} function
+can be seen in the Listing \ref{lst:call_vertexchooser}.
+
+\lstset{language=[GNU]C++,
+		morekeywords={[2]vid_t,vector,res_t,CH_SUCCESS,Collection,
+						VertexChooserRule1st, VertexChooserRule4th,
+						TetrahedronVerticesChooser, VertexChooserRule,
+						VertexChooser},
+		keywordstyle={[2]\color{cyan}\bfseries}}
+\begin{lstlisting}[caption={Possible code for the calling the
+				\texttt{VertexChooser::ChooseVertices()} function},
+					label={lst:call_vertexchooser}]
+Collection<VertexChooserRule> collection;
+collection.push_back( new VertexChooserRule1st );
+//	...
+collection.push_back( new VertexChooserRule4th );
+
+std::vector<vid_t> point;
+
+VertexChooser &vc = TetrahedronVerticesChooser(dh);
+
+ch::res_t res = vc.ChooseVertices( collection, point );
+if ( res != CH_SUCCESS )
+	return res;
+\end{lstlisting}
+
+
+%-------------------------------------------------------------------------------
+%	Randomizer
+%-------------------------------------------------------------------------------
+
+\subsection{Randomizer subsystem}
+
+\colorbox{red}{How to create an abstraction? \texttt{Iterator}? Inner or outer?}
+
+If the \texttt{Randomizer} is realized as on-air randomizer then it can be
+realized as \texttt{RandomIterator}.
+
+In its constructor receives the points $P$ and the index of the points in $P$
+which forms the tetrahedron. So these points (which form the tetrahedron) won't
+be enumerated by the Iterator.
+
+\subsubsection{Realization}
+
+The \texttt{RandomIterator} must contain a vector whose every element will be
+initialized to \texttt{-1} except the ones which form the tetrahedron. They will
+contain e.g. 0 or 1. The \texttt{RandomIterator} always chooses an index which
+is not \texttt{-1}. 
+
+
+
+
+
+
+

@@ -1,0 +1,52 @@
+
+
+
+%	Using associative container in perl
+\perlnewcommand{\initReqCommon}[0]{
+
+	#	The hash which stores the requirement names and the belonging running
+	#	index
+	%reqcommon = ();
+	
+	#	The running index
+	$reqComIndex = 0;
+	
+	#	Function for padding the running index
+	sub padding
+	{
+		my ($val) = @_;
+		$val >= 100 ? "" : ( $val >= 10 ? "0" : "00");
+	}
+	
+	sub getReqCommonTitle
+	{
+		my ($key) = @_;
+		"\\textbf{REQ\\_COMMON\\_" . padding( $reqcommon{$key} )
+											. $reqcommon{$key} . "}";
+	}
+
+	return;
+}
+
+\perlnewcommand{\newReqCommon}[1]{
+	my ($key) = @_;
+
+	if ( exists( $reqcommon{$key} ) ) {
+		return "\\colorbox{yellow}{Warning: the key (" . $key .
+					") already exist with value ($reqcommon{$key})!}";
+	}
+	$reqcommon{$_[0]} = ++$reqComIndex;
+	getReqCommonTitle( $_[0] );
+}
+
+\perlnewcommand{\getReqCommon}[1]{
+	my ($key) = @_;
+
+	if ( exists( $reqcommon{$key} ) ) {
+		return getReqCommonTitle( $key );
+	}
+	"\\colorbox{yellow}{ Warning: the key ($key) doesn't exist!}";
+}
+
+\initReqCommon
+

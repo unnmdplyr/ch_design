@@ -1,0 +1,162 @@
+
+
+\section{The algorithm}
+
+The whole algorithm is the following:
+
+\newcommand{\conv}		{$\mathcal{C}$}
+\newcommand{\convhull}	{$\mathcal{CH}$}
+\newcommand{\graph}		{$\mathcal{G}$}
+\newcommand{\conf}		{$F_{conflict}(p_r)$}
+\newcommand{\lst}		{$\mathcal{L}$}
+
+	\begin{algorithm}[H]
+	\caption{ConvexHull algorithm}								\label{convhull}
+	\begin{algorithmic}[1]
+		\Require A set $P$ of $n$ points in three-space.
+		\Ensure The convex hull \convhull($P$) of $P$.
+
+		\Statex
+		\Function{ConvexHull}{ $P$ }
+
+			\State Find four points $p_1, p_2, p_3, p_4$ in $P$ that form
+						a tetrahedron.						\label{input_check}
+
+			\State \conv $ \gets $ \convhull (\{$p_1,p_2,p_3,p_4$\})
+															\label{tetrah}
+
+			\State Compute a random permutation $p_5, p_6, \dots, p_n$ of
+						the remaining points.				\label{random}
+
+			\State Initialize the conflict graph \graph with all visible pairs
+					($p_t, f$), where $f$ is a
+			\Statex[1] facet of \conv and $t \textgreater 4$.
+			\OldStatex
+
+			\For {$r \gets 5$ \textbf{to} $n$}
+				%\State (* Insert $p_r$ into \conv: *)
+				\Comment{Insert $p_r$ into \conv}
+				\If {\conf  is not empty %(* that is, $p_r$ lies outside \conv *)
+					}
+					\Comment{that is, $p_r$ lies outside \conv}
+					\State Delete all facets in \conf from \conv.
+					\State Walk along the boundary of the visible region of
+								$p_r$ (which
+					\Statex[3]	consists exactly of the facets in \conf) and
+								create a list \lst of
+					\Statex[3]	horizon edges in order.
+					\OldStatex
+								
+					\ForAll{$e \in$ \lst}
+						\State Connect $e$ to $p_r$ by creating a triangular
+									facet $f$.
+						\If {$f$ is coplanar with its neighbor facet $f'$ along
+								$e$}
+							\State Merge $f$ and $f'$ into one facet, whose
+									conflict list is the
+							\Statex[5]	same as that of $f'$.
+						\Else %(* Determine conflicts for $f$: *)
+							\Comment{Determine conflicts for $f$}
+							\State Create a node for $f$ in \graph.
+							\State Let $f_1$ and $f_2$ be the facets incident to
+									$e$ in the old convex
+							\Statex[5]	hull.
+							\State $P(e) \gets P_{conflict}(f_1)
+										\cup P_{conflict}(f_2)$
+							\ForAll {points $p \in P(e)$}
+								\State If $f$ is visible from $p$, add $(p,f)$
+										to \graph.
+							\EndFor
+						\EndIf
+					\EndFor
+					\State Delete the node corresponding to $p_r$ and the nodes
+					\Statex[3]	corresponding to the facets in \conf from
+									\graph, together with
+					\Statex[3]	their incident arcs.
+				\EndIf
+			\EndFor
+
+			\State \Return \conv
+		\EndFunction
+	\end{algorithmic}
+	\end{algorithm}
+
+
+The algorithm is provided by \citeauthor{compgeo08} at page 249.
+
+The whole concept is the following. We have at the beginning a
+\textbf{tetrahed\-ron} which has 4 vertices. In every step will be \textbf{add}ed
+to this polytope a new \textbf{vertex}. If the new vertex is \textbf{inside} the
+polytope, then ignore it. Else create a new polytope where the new vertex is
+part of it.
+
+%%------------------------------------------------------------------------------
+
+\section{Requirements}
+
+This section enumerates the possible \textbf{requirements}.
+
+\begin{itemize}
+
+	\item	A \textbf{library} must be created or compiled which establishes the
+		given algorithm.
+
+	\item	The library provides an \textbf{interface}. The user of the library
+		can reach the functionality (provided by the library) through this
+		interface (or API).
+		
+	\item	The vertex data mustn't be changed outside the library until the
+		process of the convex hull determination runs.
+
+\end{itemize}
+
+%%------------------------------------------------------------------------------
+
+\section{Library interface}
+\label{sec:interface}
+
+This section explains the interface of the library. Only one function can be
+called. This is the function \texttt{ch::ConvexHull()}.
+
+
+\lstset{language=[GNU]C++,
+		morekeywords={[2]size_t,T,vector,res_t},
+		keywordstyle={[2]\color{cyan}\bfseries}}
+\begin{lstlisting}[caption={The only interface function},
+					label={lst:intf_func}]
+///	\return	With the result which indicates whether does any
+///					solutions exist for the given input.
+template <typename T>
+ch::res_t ConvexHull(
+						const T* const ptr,
+						const std::size_t coordPad,
+						const std::size_t diffSize,
+						const std::size_t vertNum,
+						std::vector< std::vector<std::size_t> >& indices
+						);
+\end{lstlisting}
+
+Parameters which are shown in the Listing \ref{lst:intf_func} are the following:
+
+\bigskip
+
+\begin{tabularx}{1\textwidth}{
+				l
+				>{\setlength\hsize{1\hsize}\raggedright\arraybackslash}X }
+\textbf{Parameter} & \textbf{Meaning of the parameter}				\\
+\hline
+ptr			& pointer to the first element							\\
+coordPad	& padding between coordinates in bytes					\\
+diffSize	& difference between begin address of
+							two consecutive vertices in bytes		\\
+vertNum		& number of vertices									\\
+indices		& the ouput parameter. Contains the face indices of the
+									result convex hull.				\\
+\hline
+\end{tabularx}
+	
+%%------------------------------------------------------------------------------
+
+
+
+

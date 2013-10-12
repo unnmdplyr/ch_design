@@ -1,0 +1,107 @@
+.PHONY: alleps distclean clean realclean dvi epsToPdf pdf copy
+
+#-------------------------------------------------------------------------------
+#	Variables
+#-------------------------------------------------------------------------------
+DIA=/usr/bin/dia
+DIA_FILES=$(notdir $(wildcard figures/dia/*.dia))
+
+EPS_FILES=$(patsubst %.dia,%.eps,$(DIA_FILES))
+PDF_FILES=$(patsubst %.dia,%.pdf,$(DIA_FILES))
+
+EPS_PATHS=$(addprefix figures/eps/,$(EPS_FILES))
+PDF_PATHS=$(addprefix figures/pdf/,$(PDF_FILES))
+
+SECTION_DIRS=	change_log \
+		ucrs \
+		architecture \
+		todo \
+		bibliography
+
+SECTION_PATHS=$(addprefix sections/,$(SECTION_DIRS))
+
+DIRS=. $(SECTION_PATHS)
+
+TEX_FILES= $(foreach dir,$(SECTION_PATHS),$(wildcard $(dir)/*.tex))
+
+TMP_TEX_FILES= $(foreach dir, $(DIRS), $(dir)/*.tex~)
+
+TMP_AUX_FILES= $(foreach dir, $(DIRS), $(dir)/*.aux)
+
+#	The name of the document
+DOC_NAME = ch_design
+
+BIB_FILE= $(DOC_NAME).aux
+
+#-------------------------------------------------------------------------------
+#	Colors
+#-------------------------------------------------------------------------------
+BLUE   = @echo -e -n '\033[1;34m'
+NORMAL = @echo -e -n '\033[1;0m'
+RED    = @echo -e -n '\033[1;31m'
+GREEN  = @echo -e -n '\033[1;32m'
+YELLOW = @echo -e -n '\033[0;33m'
+PURPLE = @echo -e -n '\033[0;35m'
+CYAN   = @echo -e -n '\033[0;36m'
+
+
+#-------------------------------------------------------------------------------
+#	Targets
+#-------------------------------------------------------------------------------
+pdf: epsToPdf $(DOC_NAME).pdf
+
+alleps: $(EPS_PATHS)
+	
+figures/eps/%.eps: figures/dia/%.dia
+	-$(DIA) --filter=eps-builtin --export=$@ $<
+
+distclean:
+	$(RED)
+	@rm -frv  *.log  *.dvi  *.aux  *.out  *.toc  *.lof  *.ptp  *.lol  *.lot	\
+				*.bbl  *.blg  *.lgpl
+	$(NORMAL)
+	
+clean: distclean
+	$(RED)
+	@rm -frv  $(TMP_TEX_FILES)
+	@rm -frv  $(TMP_AUX_FILES)
+	@rm -frv  makefile~
+	@rm -frv  figures/eps/*.eps
+	@rm -frv  figures/pdf/*.pdf
+	@rm -frv  figures/dia/*.dia~
+	@rm -frv  figures/dia/*.dia.autosave
+	$(NORMAL)
+
+realclean: clean
+	$(RED)
+	@rm -frv *.pdf
+	$(NORMAL)
+
+dvi : alleps $(DOC_NAME).dvi
+
+epsToPdf : $(PDF_PATHS)
+
+figures/pdf/%.pdf: figures/eps/%.eps
+	epstopdf $< --outfile=$@
+
+$(DOC_NAME).pdf : $(DOC_NAME).tex $(TEX_FILES) $(PDF_PATHS)
+	$(BLUE)
+	@echo "1st pdflatex round..."
+	$(NORMAL)
+	perltex --latex=pdflatex $<
+	$(BLUE)
+	@echo "bibtex round..."
+	$(NORMAL)
+	bibtex   $(BIB_FILE)
+	$(BLUE)
+	@echo "2nd pdflatex round..."
+	$(NORMAL)
+	perltex --latex=pdflatex $<
+	$(BLUE)
+	@echo "3rd pdflatex round..."
+	$(NORMAL)
+	perltex --latex=pdflatex $<
+
+remake:  distclean  pdf
+
+

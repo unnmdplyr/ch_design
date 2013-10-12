@@ -1,0 +1,39 @@
+
+
+\section{System design}
+
+This section describes the design of the whole system. Visualizes the control
+and dataflow between the subsystems. Explains interfaces, dependencies between
+subsystems. Input, output to and from each subsystem.
+
+Full description is created by \citeauthor{profcpp11} at page 53 in chapter
+``What is Programming Design?''.
+
+The \textbf{subsystems} are the followings:
+
+\begin{description}
+	\item	[Vertex provider] Stores the vertex related data which comes as
+		input into the algorithm and gives back the vertices to the client code
+		as it requests.
+
+	\item	[Tetrahedron vertices chooser]	Chooses from the input 4 vertices
+		which will make the initial tetrahedron. See Algorithm \ref{convhull}
+		Line \ref{tetrah}.
+		This subsystem will check whether the input is valid and will give back
+		an error result if it finds that not. See Algorithm \ref{convhull} Line
+		\ref{input_check}.
+
+	\item	[Randomizer] Randomizes the input points. See Algorithm
+				\ref{convhull} Line \ref{random}.
+
+	\item	[Doubly-connected edge list.] With the help of this data
+				representation, the faces of the polytope can be stored.
+
+	\item	[Conflict graph.] Stores the information if a new vertex is added to
+				the polytope then which faces must be removed.
+				
+	\item	[Face indices provider] At generating the output this will convert
+		the face indices of the polytope into the required format according
+		to the interface specification. See Section \ref{sec:interface}.
+
+\end{description}

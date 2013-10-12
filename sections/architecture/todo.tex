@@ -1,0 +1,98 @@
+
+\definecolor{lightgray}{gray}{0.85}
+\definecolor{orange}{rgb}{ 0.95, 0.4, 0.2 }
+\definecolor{lightblue}{rgb}{ 0.6, 0.7, 1.0 }
+
+\newcommand{\PriorityLow}		{Low}
+\newcommand{\PriorityNormal}	{Normal}
+\newcommand{\PriorityHigh}		{High}
+
+\newcommand{\issue}[4] {
+						
+						\begin{tabularx}{1\textwidth}{
+											|r@{ }
+											>{\setlength\hsize{1\hsize}
+												\raggedright\arraybackslash}X| }
+						\hline
+						\colorbox{orange}{Registered at:}	& \texttt{#1}	\\
+
+						\colorbox{green}{Solved at:}		& \texttt{#2}	\\
+						
+						\colorbox{lightblue}{Priority: }	& \texttt{#3}	\\
+
+						\colorbox{lightgray}{Description:}	& #4			\\
+						\hline
+						\end{tabularx}
+						}
+
+
+\section{TODOs and FIXMEs}
+
+\subsection{Unresolved issues}
+
+	\begin{enumerate}
+
+	\item	\issue{Tue Feb 26 10:12:29 CET 2013}
+					{}
+					{\PriorityLow}
+		{
+			Description of the issue.
+		}
+
+	\end{enumerate}
+
+	
+\subsection{Resolved issues}
+
+	\begin{enumerate}
+
+	\item	\issue{Wed Feb  6 09:13:17 CET 2013}
+					{Wed Feb 27 10:32:59 CET 2013}
+					{\PriorityNormal}
+		{
+			Description of the solved issue.
+		}
+
+	\end{enumerate}
+	
+\subsection{How to Eliminate Fifty Per Cent of (Tour Business) Worries}
+
+	Advices from Dale Carnegie.
+
+	\begin{description}
+	\item[Question 1:] What is the problem?
+
+		("In the old days we used to spend an hour or two in a worried
+		conference without anyone's knowing
+		specifically and concretely what the real problem was. We used to work
+		ourselves into a lather
+		discussing our troubles without ever troubling to write out specifically
+		what our problem was.)
+
+	\item[Question 2:] What is the cause of the problem?
+
+		("As I look back over my career, I am appalled at the wasted hours I
+		have spent in worried
+		conferences without ever trying to find out clearly the conditions which
+		lay at the root of the
+		problem.)
+
+	\item[Question 3:] What are all possible solutions of the problem?
+
+		("In the old days, one man in the conference would suggest one solution.
+		Someone else would argue
+		with him. Tempers would flare. We would often get clear off the subject,
+		and at the end of the
+		conference no one would have written down all the various things we
+		could do to attack the problem.)
+
+	\item[Question 4:] What solution do you suggest?
+
+		("I used to go into a conference with a man who had spent hours worrying
+		about a situation and going
+		around in circles without ever once thinking through all possible
+		solutions and then writing down:
+		'This is the solution I recommend.')
+
+	\end{description}
+

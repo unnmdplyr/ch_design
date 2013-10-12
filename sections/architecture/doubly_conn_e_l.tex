@@ -1,0 +1,175 @@
+
+
+\subsection{Doubly-connected edge list}
+
+This subsection deals with the doubly-connected edge list related realization
+part.
+
+\textbf{Requirements}:
+
+\begin{itemize}
+
+\item	We will keep the convention that the half-edges are directed such that
+			the ones bounding any face form a \textbf{counterclockwise} cycle
+			when seen from the outside of the polytope. This requirement
+			originates from \citeauthor{compgeo08} page 247.
+
+\item	Always will exist a face which represents the \textit{horizon} of $p_r$
+			on \convhull($P_{r-1}$). But this doesn't mean that cannot be states
+			where no any edges will belong to this face. E.g. when the polytope
+			is closed and doesn't miss any faces from the polytope.
+
+\end{itemize}
+
+
+\textbf{Required operations}:
+
+\begin{description}
+
+	\item	[Add new face] to existing faces. See Algorithm \ref{alg:add_face}
+		Line \ref{alg:line:add_face_func}.
+	
+	
+	\item	[Remove existing face] from the polytope.
+		\begin{itemize}
+			\item	At determining the horizon of a point on the given polytope,
+				the face must remain in the polytope whose infinite plane
+				includes the given point.
+		\end{itemize}
+		
+	\item	[Merging coplanar faces] in the polytope which are adjacent to each
+				other.
+
+\end{description}
+
+
+\newcommand{\vara}		{$\mathcal{V}_a$}
+\newcommand{\lste}		{$\mathcal{L}_e$}
+
+	\begin{algorithm}[H]
+	\caption{Add a new face algorithm}						\label{alg:add_face}
+	\begin{algorithmic}[1]
+		\Require A set $P_m$ of $m$ points in three-space where
+			$P_m \subseteq P$ and $m \leq n$.
+		\Ensure The \textit{id} of the recently added face.
+
+		\Statex
+		\Function{AddFace}{ $P_m$ }				\label{alg:line:add_face_func}
+
+			\State Create a new \texttt{IncidentFace} ID.
+			\Statex								\Comment{The edges of the face}
+
+			\ForAll { $e \in \{e_{i,i+1}\} \cup \{e_{m,0}\}$,
+													where $0 \leq i \leq m-1$ }
+				\If { $e$ already $\exists$ }
+					\State \vara $\gets$ \texttt{IncidentFace} ID of $e$
+						
+				\Else
+					\State Add $e$ to the face.
+				\EndIf
+
+				\State Initialize its \texttt{next} and \texttt{prev} members.
+				\State \texttt{IncidentFace} of $e \gets$ the recently created
+					face ID
+			\EndFor
+
+			\Statex
+			
+			\State $allTwinsExist \gets true $
+			\State $noTwinsExist   \gets true $
+
+			\ForAll { $e \in \{e_{i,i-1}\} \cup \{e_{0,m}\}$,
+													where $1 \leq i \leq m$ }
+				\Comment{The twin edges}
+				
+				\If { $e$ $\nexists$ }
+					\State Add $e$ to the polytope.
+					\State \texttt{IncidentFace} of $e \gets$ \texttt{null} face
+						ID
+					\State Put $e$ into list \lste.
+					\State $allTwinsExist \gets false$
+				\Else
+					\State $noTwinsExist   \gets false $
+					\State \texttt{IncidentFace} ID $\gets$ the
+						\texttt{IncidentFace} ID of $e$
+				\EndIf
+			\EndFor
+
+			\Statex
+
+			\If { $allTwinsExist == true$ }
+				\Comment {All twin edges already existed}
+				\State Remove the inner face with ID \texttt{IncidentFace} ID.
+			\EndIf
+
+			\Statex
+
+			\If { $noTwinsExist == true$ }
+				\Comment {No twin edges existed yet}
+				\State	Create new face ID and new face $f$.
+				\State	\vara $\gets$ face ID of $f$
+				\State	\texttt{OuterComponent} of $f \gets $ \texttt{null} edge
+					ID
+				\State	\texttt{InnerComponent} of $f \gets $ the first edge
+					from the list \lste
+			\EndIf
+
+		\algstore{bkbreak}
+	\end{algorithmic}
+	\end{algorithm}
+
+	\begin{algorithm}[h]
+	\caption{Add a new face algorithm - Part 2}
+	\begin{algorithmic}[1]
+		\algrestore{bkbreak}
+			\Statex
+
+			\ForAll { $e \in$ \lste }
+				\Comment{Building the inner face}
+				\State Make a round trip around the inner face at the following
+					manner.
+				\Statex
+
+				\If {this edge is the first in the list \lste}
+					\State \texttt{IncidentFace} ID $\gets$ \vara
+				\Else
+					\State Create new \texttt{IncidentFace} ID.
+				\EndIf
+				
+				\Statex
+
+				\State Initialize \texttt{next} and \texttt{prev} members of $e$
+					by looking for edges which
+				\Statex[2]	point out from the vertex which is the endpoint of
+					$e$ and its
+				\Statex[2]	\texttt{Inci\-dent\-Face} member is \texttt{null}
+					face ID or ID stored in \vara.
+				\Statex[2]	Write over its \texttt{IncidentFace} ID member to
+					the current
+				\Statex[2]	\texttt{IncidentFace} ID.
+				\Statex
+
+				\ForAll {edges which is touched during the round trip}
+					\If {edge.\texttt{IncidentFace} ID $==$ \texttt{null}
+						face ID}
+						\State Remove this edge ID from the list \lste.
+					\EndIf
+				\EndFor
+			\EndFor
+			\Statex
+
+
+		\EndFunction
+	\end{algorithmic}
+	\end{algorithm}
+
+	
+	
+
+	%	Get the next edge. And begin to create with it the other
+	%	\texttt{InnerComponent}s.
+
+
+
+
+
