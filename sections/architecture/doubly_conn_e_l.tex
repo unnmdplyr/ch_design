@@ -15,9 +15,73 @@ part.
 			originates from \citeauthor{compgeo08} page 247.
 
 \item	Always will exist a face which represents the \textit{horizon} of $p_r$
-			on \convhull($P_{r-1}$). But this doesn't mean that cannot be states
-			where no any edges will belong to this face. E.g. when the polytope
-			is closed and doesn't miss any faces from the polytope.
+			on \convhull($P_{r-1}$). But this doesn't mean that can not exist
+			states where no any edges will belong to this face. E.g. when the
+			polytope is closed and doesn't miss any faces from the polytope.
+
+\item	The half edges will be stored in a
+\lstset{language=[GNU]C++,
+		morekeywords={[2]pair,vid_t},
+		keywordstyle={[2]\color{cyan}\bfseries}}
+\begin{lstlisting}[
+					label={lst:half_edge_type}]
+std::pair<vid_t, vid_t>
+
+typedef  std::pair<vid_t, vid_t>  half_edge_type;
+\end{lstlisting}
+
+		type. 
+%		The faces will be stored in a
+%\lstset{language=[GNU]C++,
+%		morekeywords={[2]pair,vector},
+%		keywordstyle={[2]\color{cyan}\bfseries}}
+%\begin{lstlisting}[
+%					label={lst:face_type}]
+%std::vector< std::pair<unsigned, unsigned> >
+
+%typedef  std::vector< half_edge_type >  face_type;
+%\end{lstlisting}
+%		
+%		type. The faces must be stored in a container:
+%\lstset{language=[GNU]C++,
+%		morekeywords={[2]pair,vector},
+%		keywordstyle={[2]\color{cyan}\bfseries}}
+%\begin{lstlisting}[
+%					label={lst:container_type}]
+%std::vector< std::pair<unsigned, unsigned> >
+
+%typedef  std::vector< face_type >  container_type;
+%\end{lstlisting}
+
+%		Creating a face from 3 verices:
+%\lstset{language=[GNU]C++,
+%		morekeywords={[2]pair,vector},
+%		keywordstyle={[2]\color{cyan}\bfseries}}
+%\begin{lstlisting}[
+%					label={lst:creating_face}]
+%std::vector<unsigned> vertices;
+
+%container_type container;
+
+%face_type face;
+
+%for ( std::vector<unsigned>::iterator it=vertices.begin(); it!=vertices.end()-1; ++it )
+%{
+%	half_edge_type half_edge( make_pair<unsigned,unsigned>( *it, *(it+1) ) );
+
+%	face.push_back( half_edge );
+%}
+
+%half_edge_type half_edge(
+%		make_pair<unsigned,unsigned>( *(vertices.end()-1), *(vertices.begin()) ) );
+
+%face.push_back( half_edge );
+
+%container.push_back( face );
+
+%\end{lstlisting}
+
+		
 
 \end{itemize}
 

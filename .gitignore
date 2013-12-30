@@ -1,0 +1,13 @@
+
+*.eps
+*.pdf
+
+*.aux
+*.log
+*.out
+*.toc
+
+*.bbl
+*.blg
+*.lgpl
+

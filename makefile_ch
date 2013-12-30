@@ -65,7 +65,7 @@ clean: distclean
 	$(RED)
 	@rm -frv  $(TMP_TEX_FILES)
 	@rm -frv  $(TMP_AUX_FILES)
-	@rm -frv  makefile~
+	@rm -frv  makefile_ch~
 	@rm -frv  figures/eps/*.eps
 	@rm -frv  figures/pdf/*.pdf
 	@rm -frv  figures/dia/*.dia~

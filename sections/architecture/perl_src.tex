@@ -35,8 +35,8 @@
 		return "\\colorbox{yellow}{Warning: the key (" . $key .
 					") already exist with value ($reqcommon{$key})!}";
 	}
-	$reqcommon{$_[0]} = ++$reqComIndex;
-	getReqCommonTitle( $_[0] );
+	$reqcommon{$key} = ++$reqComIndex;
+	getReqCommonTitle( $key );
 }
 
 \perlnewcommand{\getReqCommon}[1]{

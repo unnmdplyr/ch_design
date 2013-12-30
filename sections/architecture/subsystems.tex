@@ -13,6 +13,10 @@ possible additional aspects.
 \begin{description}
 	\item	[\newReqCommon{standalonedir}]	In the source code all subsystems
 			must have a stand alone directory independent from the other ones.
+			This means that every subsystem must have an appropriate interface
+			towards the other subsystems. At this way the testing for all
+			subsystems must be easier. So ``only'' a (sub)interface must be
+			tested.
 	
 	\item	[\newReqCommon{reachingfunctionality}] But each subsystem must be
 			able to reach the functionality of the other subsystems which they
